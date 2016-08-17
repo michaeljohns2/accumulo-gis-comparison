@@ -34,7 +34,7 @@ services:
         volumes:
           - './persistence/hadoop-data/hdfs:/data/hdfs:rw'
     geodocker-accumulo-master:
-         # if this is first run or you have not manually committed geowave then reverse the comments below
+	 # if you have not already run `./scripts/install-geowave.sh geowave` then reverse the comments below
         #image: ${PULL_PREFIX}/geodocker-accumulo:latest
         image: ${PULL_PREFIX}/geodocker-accumulo_master:geowave
         command: master dev

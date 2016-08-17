@@ -1,11 +1,11 @@
 version: '2'
 services:
     geodocker-zookeeper:
-        image: ${PULL_PREFIX}/geodocker-zookeeper:latest
+        image: daunnc/geodocker-zookeeper:latest
         volumes:
           - './persistence/zookeeper:/data/zookeeper:rw'
     geodocker-hadoop-name:
-        image: ${PULL_PREFIX}/geodocker-hadoop:latest
+        image: daunnc/geodocker-hadoop:latest
         command: name dev
         environment:
           HADOOP_MASTER_ADDRESS: geodocker-hadoop-name
@@ -16,7 +16,7 @@ services:
         volumes:
           - './persistence/hadoop-name/hdfs:/data/hdfs:rw'
     geodocker-hadoop-sname:
-        image: ${PULL_PREFIX}/geodocker-hadoop:latest
+        image: daunnc/geodocker-hadoop:latest
         command: sname dev
         environment:
           HADOOP_MASTER_ADDRESS: geodocker-hadoop-name
@@ -25,7 +25,7 @@ services:
         volumes:
           - './persistence/hadoop-sname/hdfs:/data/hdfs:rw'
     geodocker-hadoop-data:
-        image: ${PULL_PREFIX}/geodocker-hadoop:latest
+        image: daunnc/geodocker-hadoop:latest
         command: data dev
         environment:
           HADOOP_MASTER_ADDRESS: geodocker-hadoop-name
@@ -34,15 +34,13 @@ services:
         volumes:
           - './persistence/hadoop-data/hdfs:/data/hdfs:rw'
     geodocker-accumulo-master:
-         # if this is first run or you have not manually committed geowave then reverse the comments below
-        #image: ${PULL_PREFIX}/geodocker-accumulo:latest
-        image: ${PULL_PREFIX}/geodocker-accumulo_master:geowave
+        image: daunnc/geodocker-accumulo:latest
         command: master dev
         environment:
           HADOOP_MASTER_ADDRESS: geodocker-hadoop-name
           ACCUMULO_ZOOKEEPERS: geodocker-zookeeper
-          ACCUMULO_SECRET: ${ACC_SECRET}
-          ACCUMULO_PASSWORD: ${ACC_PWD}
+          ACCUMULO_SECRET: secret
+          ACCUMULO_PASSWORD: GisPwd
           INSTANCE_NAME: gis
         depends_on:
           - geodocker-hadoop-data
@@ -50,52 +48,52 @@ services:
           - './persistence/datasets:/datasets:ro'
           - './geolife/ingest.sh:/tmp/ingest.sh:ro'
     geodocker-accumulo-gc:
-        image: ${PULL_PREFIX}/geodocker-accumulo:latest
+        image: daunnc/geodocker-accumulo:latest
         command: gc dev
         environment:
           HADOOP_MASTER_ADDRESS: geodocker-hadoop-name
           ACCUMULO_ZOOKEEPERS: geodocker-zookeeper
-          ACCUMULO_SECRET: ${ACC_SECRET}
-          ACCUMULO_PASSWORD: ${ACC_PWD}
+          ACCUMULO_SECRET: secret
+          ACCUMULO_PASSWORD: GisPwd
         depends_on:
           - geodocker-accumulo-master
     geodocker-accumulo-monitor:
-        image: ${PULL_PREFIX}/geodocker-accumulo:latest
+        image: daunnc/geodocker-accumulo:latest
         command: monitor dev
         environment:
           HADOOP_MASTER_ADDRESS: geodocker-hadoop-name
           ACCUMULO_ZOOKEEPERS: geodocker-zookeeper
-          ACCUMULO_SECRET: ${ACC_SECRET}
-          ACCUMULO_PASSWORD: ${ACC_PWD}
+          ACCUMULO_SECRET: secret
+          ACCUMULO_PASSWORD: GisPwd
         ports:
           - 50095:50095
         depends_on:
           - geodocker-accumulo-master
     geodocker-accumulo-tracer:
-        image: ${PULL_PREFIX}/geodocker-accumulo:latest
+        image: daunnc/geodocker-accumulo:latest
         command: tracer dev
         environment:
           HADOOP_MASTER_ADDRESS: geodocker-hadoop-name
           ACCUMULO_ZOOKEEPERS: geodocker-zookeeper
-          ACCUMULO_SECRET: ${ACC_SECRET}
-          ACCUMULO_PASSWORD: ${ACC_PWD}
+          ACCUMULO_SECRET: secret
+          ACCUMULO_PASSWORD: GisPwd
         depends_on:
           - geodocker-accumulo-master
     geodocker-accumulo-tserver:
-        image: ${PULL_PREFIX}/geodocker-accumulo:latest
+        image: daunnc/geodocker-accumulo:latest
         command: tserver dev
         environment:
           HADOOP_MASTER_ADDRESS: geodocker-hadoop-name
           ACCUMULO_ZOOKEEPERS: geodocker-zookeeper
-          ACCUMULO_SECRET: ${ACC_SECRET}
-          ACCUMULO_PASSWORD: ${ACC_PWD}
+          ACCUMULO_SECRET: secret
+          ACCUMULO_PASSWORD: GisPwd
         depends_on:
           - geodocker-accumulo-master
           - geodocker-accumulo-gc
           - geodocker-accumulo-monitor
           - geodocker-accumulo-tracer
     #geodocker-spark-master:
-    #    image: ${PULL_PREFIX}/geodocker-spark:latest
+    #    image: daunnc/geodocker-spark:latest
     #    command: master dev
     #    hostname: geodocker-spark-master
     #    environment:
@@ -110,7 +108,7 @@ services:
     #    depends_on:
     #      - geodocker-hadoop-data
     #geodocker-spark-worker:
-    #    image: ${PULL_PREFIX}/geodocker-spark:latest
+    #    image: daunnc/geodocker-spark:latest
     #    command: worker dev
     #    hostname: geodocker-spark-worker
     #    environment:
@@ -123,7 +121,7 @@ services:
     #    depends_on:
     #      - geodocker-spark-master
     #geodocker-geoserver:
-    #    image: ${PULL_PREFIX}/geodocker-geoserver:latest
+    #    image: daunnc/geodocker-geoserver:latest
     #    hostname: geodocker-geoserver
     #    depends_on:
     #      - geodocker-accumulo-tserver
